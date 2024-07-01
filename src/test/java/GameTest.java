@@ -1,4 +1,3 @@
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,5 +28,23 @@ class GameTest {
     void allOne() {
         rollMany(20, 1);
         assertThat(g.score()).isEqualTo(20);
+    }
+
+    @Test
+    void testSpare() {
+        g.roll(5);
+        g.roll(5);
+        g.roll(3);
+        rollMany(17, 0);
+        assertThat(g.score()).isEqualTo(16);
+    }
+
+    @Test
+    void testStrike() {
+        g.roll(10);
+        g.roll(3);
+        g.roll(6);
+        rollMany(17, 0);
+        assertThat(g.score()).isEqualTo(28);
     }
 }
