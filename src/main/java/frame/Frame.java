@@ -1,6 +1,8 @@
+package frame;
+
 public class Frame {
-    private int score;
-    private int rollN = -1;
+    int score;
+    int rollN = -1;
     private boolean exceededRolls = false;
     private boolean isSpare = false;
     private boolean isStrike = false;
@@ -45,22 +47,42 @@ public class Frame {
         return score;
     }
 
-    private void checkIfRollsExceeded() {
-        if (rollN == 1) {
+    void checkIfRollsExceeded() {
+        if (hasSpentAllRolls()) {
             exceededRolls = true;
         }
     }
 
-    private void checkIfSpare() {
-        if (rollN == 1 && rolls[0] + rolls[1] == 10) {
+    void checkIfSpare() {
+        if (hasPerformedBothRolls() && isSpareCondition()) {
             isSpare = true;
         }
     }
 
-    private void checkIfStrike() {
-        if (rollN == 0 && rolls[0] == 10) {
+    void checkIfStrike() {
+        if (isTheFirstRoll() && isStrikeCondition()) {
             isStrike = true;
             exceededRolls = true;
         }
+    }
+
+    private boolean hasSpentAllRolls() {
+        return rollN >= 1;
+    }
+
+    private boolean hasPerformedBothRolls() {
+        return rollN == 1;
+    }
+
+    private boolean isTheFirstRoll() {
+        return rollN == 0;
+    }
+
+    private boolean isSpareCondition() {
+        return rolls[0] + rolls[1] == 10;
+    }
+
+    private boolean isStrikeCondition() {
+        return rolls[0] == 10;
     }
 }

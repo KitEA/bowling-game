@@ -64,4 +64,28 @@ class GameTest {
         rollMany(9, 0);
         assertThat(g.score()).isEqualTo(61);
     }
+
+    @Test
+    void testTenthFrame() {
+        g.roll(1);
+        g.roll(4);
+        g.roll(4);
+        g.roll(5);
+        g.roll(6);
+        g.roll(4);
+        g.roll(5);
+        g.roll(5);
+        g.roll(10);
+        g.roll(0);
+        g.roll(1);
+        g.roll(7);
+        g.roll(3);
+        g.roll(6);
+        g.roll(4);
+        g.roll(10);
+        g.roll(2);
+        g.roll(8);
+        g.roll(6);
+        assertThat(g.score()).isEqualTo(133);
+    }
 }

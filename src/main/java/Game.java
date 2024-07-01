@@ -1,9 +1,13 @@
+import frame.Frame;
+import frame.TenthFrame;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
     private int currentFrame = -1;
     private final List<Frame> frames = new ArrayList<>(10);
+    private static final int MAX_NUMBER_OF_FRAMES = 10;
 
     public void roll(int pinsKnockedDown) {
         checkIfShouldMoveToTheNextFrame();
@@ -24,32 +28,43 @@ public class Game {
     }
 
     private void checkIfShouldMoveToTheNextFrame() {
-        if (frames.isEmpty() || isCheckIfRollsAreExceeded()) {
+        if (frames.isEmpty() || checkIfRollsAreExceeded() || frames.size() > MAX_NUMBER_OF_FRAMES) {
             moveToTheNextFrame();
         }
     }
 
-    private boolean isCheckIfRollsAreExceeded() {
+    private boolean checkIfRollsAreExceeded() {
         return frames.get(currentFrame).isExceeded();
     }
 
     private void moveToTheNextFrame() {
-        Frame f = new Frame();
+        Frame f = currentFrame == 8
+                ? new TenthFrame()
+                : new Frame();
+
         frames.add(f);
         currentFrame++;
     }
 
     private void addBonusToPreviousFrameIfSpare(int pinsKnockedDown) {
-        if (frames.size() > 1 && frames.get(currentFrame - 1).isSpare()) {
-            frames.get(currentFrame - 1).addBonus(pinsKnockedDown);
-            frames.get(currentFrame - 1).setSpare(false);
+        if (isTherePreviousFrame() && getPreviousFrame().isSpare()) {
+            getPreviousFrame().addBonus(pinsKnockedDown);
+            getPreviousFrame().setSpare(false);
         }
     }
 
     private void addBonusToPrevFrameIfStrike() {
-        if (frames.size() > 1 && frames.get(currentFrame).isExceeded() && frames.get(currentFrame - 1).isStrike()) {
-            frames.get(currentFrame - 1).addBonus(frames.get(currentFrame).score());
-            frames.get(currentFrame - 1).setStrike(false);
+        if (isTherePreviousFrame() && frames.get(currentFrame).isExceeded() && getPreviousFrame().isStrike()) {
+            getPreviousFrame().addBonus(frames.get(currentFrame).score());
+            getPreviousFrame().setStrike(false);
         }
+    }
+
+    private boolean isTherePreviousFrame() {
+        return frames.size() > 1;
+    }
+
+    private Frame getPreviousFrame() {
+        return frames.get(currentFrame - 1);
     }
 }
