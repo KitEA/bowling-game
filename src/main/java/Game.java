@@ -1,31 +1,54 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Game {
-    private int score;
-    private int rollN = 0;
-    private final int[] rolls = new int[21];
+    private int currentFrame = -1;
+    private final List<Frame> frames = new ArrayList<>(10);
 
     public void roll(int pinsKnockedDown) {
-        rollN++;
-        rolls[rollN] = pinsKnockedDown;
+        checkIfShouldMoveToTheNextFrame();
+        frames.get(currentFrame).roll(pinsKnockedDown);
 
-        bonusIfSpare(pinsKnockedDown);
-        bonusIfStrike(pinsKnockedDown);
+        addBonusToPreviousFrameIfSpare(pinsKnockedDown);
 
-        score += pinsKnockedDown;
-    }
-
-    private void bonusIfStrike(int pinsKnockedDown) {
-        if (rollN > 2 && rolls[rollN - 2] == 10 && rollN % 2 != 0) {
-            score += pinsKnockedDown + rolls[rollN - 1];
-        }
-    }
-
-    private void bonusIfSpare(int pinsKnockedDown) {
-        if (rollN > 2 && rolls[rollN - 2] + rolls[rollN - 1] == 10 && rollN % 2 != 0) {
-            score += pinsKnockedDown;
-        }
+        addBonusToPrevFrameIfStrike();
     }
 
     public int score() {
+        int score = 0;
+        for (Frame frame : frames) {
+            score += frame.score();
+        }
+
         return score;
+    }
+
+    private void checkIfShouldMoveToTheNextFrame() {
+        if (frames.isEmpty() || isCheckIfRollsAreExceeded()) {
+            moveToTheNextFrame();
+        }
+    }
+
+    private boolean isCheckIfRollsAreExceeded() {
+        return frames.get(currentFrame).isExceeded();
+    }
+
+    private void moveToTheNextFrame() {
+        Frame f = new Frame();
+        frames.add(f);
+        currentFrame++;
+    }
+
+    private void addBonusToPreviousFrameIfSpare(int pinsKnockedDown) {
+        if (frames.size() > 1 && frames.get(currentFrame - 1).isSpare()) {
+            frames.get(currentFrame - 1).addBonus(pinsKnockedDown);
+            frames.get(currentFrame - 1).setSpare(false);
+        }
+    }
+
+    private void addBonusToPrevFrameIfStrike() {
+        if (frames.size() > 1 && frames.get(currentFrame).isExceeded() && frames.get(currentFrame - 1).isStrike()) {
+            frames.get(currentFrame - 1).addBonus(frames.get(currentFrame).score());
+        }
     }
 }
