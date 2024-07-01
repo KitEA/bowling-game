@@ -49,6 +49,7 @@ public class Game {
     private void addBonusToPrevFrameIfStrike() {
         if (frames.size() > 1 && frames.get(currentFrame).isExceeded() && frames.get(currentFrame - 1).isStrike()) {
             frames.get(currentFrame - 1).addBonus(frames.get(currentFrame).score());
+            frames.get(currentFrame - 1).setStrike(false);
         }
     }
 }
