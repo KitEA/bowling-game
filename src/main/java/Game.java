@@ -5,16 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private int currentFrame = -1;
+    private int currentFrameIndex = -1;
     private final List<Frame> frames = new ArrayList<>(10);
     private static final int MAX_NUMBER_OF_FRAMES = 10;
 
     public void roll(int pinsKnockedDown) {
         checkIfShouldMoveToTheNextFrame();
-        frames.get(currentFrame).roll(pinsKnockedDown);
-
+        frames.get(currentFrameIndex).roll(pinsKnockedDown);
         addBonusToPreviousFrameIfSpare(pinsKnockedDown);
-
         addBonusToPrevFrameIfStrike();
     }
 
@@ -28,22 +26,21 @@ public class Game {
     }
 
     private void checkIfShouldMoveToTheNextFrame() {
-        if (frames.isEmpty() || checkIfRollsAreExceeded() || frames.size() > MAX_NUMBER_OF_FRAMES) {
+        if (frames.isEmpty() || (checkIfRollsAreExceeded() && frames.size() < MAX_NUMBER_OF_FRAMES)) {
             moveToTheNextFrame();
         }
     }
 
     private boolean checkIfRollsAreExceeded() {
-        return frames.get(currentFrame).isExceeded();
+        return frames.get(currentFrameIndex).isExceeded();
     }
 
     private void moveToTheNextFrame() {
-        Frame f = currentFrame == 8
+        Frame f = currentFrameIndex == 8
                 ? new TenthFrame()
                 : new Frame();
-
         frames.add(f);
-        currentFrame++;
+        currentFrameIndex++;
     }
 
     private void addBonusToPreviousFrameIfSpare(int pinsKnockedDown) {
@@ -54,8 +51,8 @@ public class Game {
     }
 
     private void addBonusToPrevFrameIfStrike() {
-        if (isTherePreviousFrame() && frames.get(currentFrame).isExceeded() && getPreviousFrame().isStrike()) {
-            getPreviousFrame().addBonus(frames.get(currentFrame).score());
+        if (isTherePreviousFrame() && frames.get(currentFrameIndex).isExceeded() && getPreviousFrame().isStrike()) {
+            getPreviousFrame().addBonus(frames.get(currentFrameIndex).score());
             getPreviousFrame().setStrike(false);
         }
     }
@@ -65,6 +62,6 @@ public class Game {
     }
 
     private Frame getPreviousFrame() {
-        return frames.get(currentFrame - 1);
+        return frames.get(currentFrameIndex - 1);
     }
 }

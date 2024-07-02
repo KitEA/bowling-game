@@ -1,19 +1,19 @@
 package frame;
 
 public final class TenthFrame extends Frame {
-    private final int[] rolls = new int[3];
     @Override
     public void roll(int pinsKnockedDown) {
-        rolls[++rollN] = pinsKnockedDown;
+        rollN++;
+        rolls.add(pinsKnockedDown);
 
         checkIfRollsExceeded();
-        checkIfSpare();
         checkIfStrike();
+        checkIfSpare();
 
-        if (isSpare() || isStrike()) {
-            score += 10;
+        if (rollN < 2) {
+            score += pinsKnockedDown;
+        } else if (isStrike() || isSpare()) {
+            score += pinsKnockedDown;
         }
-
-        score += pinsKnockedDown;
     }
 }

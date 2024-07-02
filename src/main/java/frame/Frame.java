@@ -1,18 +1,21 @@
 package frame;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Frame {
-    int score;
-    int rollN = -1;
     private boolean exceededRolls = false;
     private boolean isSpare = false;
     private boolean isStrike = false;
-    private final int[] rolls = new int[2];
+    final List<Integer> rolls = new ArrayList<>(2);
+    int rollN = -1;
+    int score;
 
     public void roll(int pinsKnockedDown) {
-        rolls[++rollN] = pinsKnockedDown;
+        rollN++;
+        rolls.add(pinsKnockedDown);
 
         checkIfRollsExceeded();
-
         checkIfSpare();
         checkIfStrike();
 
@@ -62,12 +65,11 @@ public class Frame {
     void checkIfStrike() {
         if (isTheFirstRoll() && isStrikeCondition()) {
             isStrike = true;
-            exceededRolls = true;
         }
     }
 
     private boolean hasSpentAllRolls() {
-        return rollN >= 1;
+        return hasPerformedBothRolls() || rolls.get(0) == 10;
     }
 
     private boolean hasPerformedBothRolls() {
@@ -79,10 +81,10 @@ public class Frame {
     }
 
     private boolean isSpareCondition() {
-        return rolls[0] + rolls[1] == 10;
+        return rolls.get(0) + rolls.get(1) == 10;
     }
 
     private boolean isStrikeCondition() {
-        return rolls[0] == 10;
+        return rolls.get(0) == 10;
     }
 }

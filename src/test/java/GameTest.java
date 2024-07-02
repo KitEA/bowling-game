@@ -44,7 +44,7 @@ class GameTest {
         g.roll(10);
         g.roll(3);
         g.roll(6);
-        rollMany(17, 0);
+        rollMany(16, 0);
         assertThat(g.score()).isEqualTo(28);
     }
 
@@ -61,7 +61,7 @@ class GameTest {
         g.roll(10);
         g.roll(0);
         g.roll(1);
-        rollMany(9, 0);
+        rollMany(8, 0);
         assertThat(g.score()).isEqualTo(61);
     }
 
@@ -87,5 +87,11 @@ class GameTest {
         g.roll(8);
         g.roll(6);
         assertThat(g.score()).isEqualTo(133);
+    }
+
+    @Test
+    void testPerfectGame() {
+        rollMany(12, 10);
+        assertThat(g.score()).isEqualTo(300);
     }
 }
