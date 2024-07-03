@@ -35,16 +35,12 @@ public class Frame {
         return isStrike;
     }
 
-    public void setSpare(boolean spare) {
-        isSpare = spare;
+    public int getFirstRole() {
+        return rolls.get(0);
     }
 
-    public void setStrike(boolean strike) {
-        isStrike = strike;
-    }
-
-    public void addBonus(int bonus) {
-        score += bonus;
+    public int getTwoRollsResult() {
+        return rolls.get(0) + rolls.get(1);
     }
 
     public int score() {

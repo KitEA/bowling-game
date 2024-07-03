@@ -13,17 +13,51 @@ public class Game {
     public void roll(int pinsKnockedDown) {
         checkIfShouldMoveToTheNextFrame();
         frames.get(currentFrameIndex).roll(pinsKnockedDown);
-        addBonusToPreviousFrameIfSpare(pinsKnockedDown);
-        addBonusToPrevFrameIfStrike();
     }
 
     public int score() {
         int score = 0;
-        for (Frame frame : frames) {
-            score += frame.score();
+
+        for (int i = 0; i < MAX_NUMBER_OF_FRAMES; i++) {
+            if (isTenthFrame(i)) {
+                score += frames.get(i).score();
+            } else if (frames.get(i).isStrike()) {
+                score = calculateStrikeBonus(i, score);
+            } else if (frames.get(i).isSpare()) {
+                score += frames.get(i).score() + frames.get(i + 1).getFirstRole();
+            } else {
+                score += frames.get(i).score();
+            }
         }
 
         return score;
+    }
+
+    private int calculateStrikeBonus(int frameIndex, int score) {
+        if (isTenthFrame(frameIndex + 1)) {
+            score += frames.get(frameIndex).score()
+                    + frames.get(frameIndex + 1).getTwoRollsResult();
+        }
+        // covers both cases: one when both following frames are strikes
+        // and one following is strike and another one is not
+        else if (nextFrameIsStrike(frameIndex)) {
+            score += frames.get(frameIndex).score()
+                    + frames.get(frameIndex + 1).score()
+                    + frames.get(frameIndex + 2).getFirstRole();
+        }
+        // covers the case when following frame is not a strike
+        else {
+            score += frames.get(frameIndex).score() + frames.get(frameIndex + 1).score();
+        }
+        return score;
+    }
+
+    private boolean isTenthFrame(int frameIndex) {
+        return frames.get(frameIndex) instanceof TenthFrame;
+    }
+
+    private boolean nextFrameIsStrike(int frameIndex) {
+        return frames.get(frameIndex + 1).isStrike();
     }
 
     private void checkIfShouldMoveToTheNextFrame() {
@@ -42,27 +76,5 @@ public class Game {
                 : new Frame();
         frames.add(f);
         currentFrameIndex++;
-    }
-
-    private void addBonusToPreviousFrameIfSpare(int pinsKnockedDown) {
-        if (isTherePreviousFrame() && getPreviousFrame().isSpare()) {
-            getPreviousFrame().addBonus(pinsKnockedDown);
-            getPreviousFrame().setSpare(false);
-        }
-    }
-
-    private void addBonusToPrevFrameIfStrike() {
-        if (isTherePreviousFrame() && frames.get(currentFrameIndex).isExceeded() && getPreviousFrame().isStrike()) {
-            getPreviousFrame().addBonus(frames.get(currentFrameIndex).score());
-            getPreviousFrame().setStrike(false);
-        }
-    }
-
-    private boolean isTherePreviousFrame() {
-        return frames.size() > 1;
-    }
-
-    private Frame getPreviousFrame() {
-        return frames.get(currentFrameIndex - 1);
     }
 }
