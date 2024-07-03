@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private int currentFrameIndex = -1;
-    private final List<Frame> frames = new ArrayList<>(10);
     private static final int MAX_NUMBER_OF_FRAMES = 10;
+    private static final int LAST_REGULAR_FRAME_INDEX = 8;
+    private final List<Frame> frames = new ArrayList<>(10);
+    private int currentFrameIndex = -1;
 
     public void roll(int pinsKnockedDown) {
         checkIfShouldMoveToTheNextFrame();
@@ -36,7 +37,7 @@ public class Game {
     }
 
     private void moveToTheNextFrame() {
-        Frame f = currentFrameIndex == 8
+        Frame f = currentFrameIndex == LAST_REGULAR_FRAME_INDEX
                 ? new TenthFrame()
                 : new Frame();
         frames.add(f);

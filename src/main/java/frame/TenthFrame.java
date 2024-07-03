@@ -10,7 +10,7 @@ public final class TenthFrame extends Frame {
         checkIfStrike();
         checkIfSpare();
 
-        if (rollN < 2) {
+        if (rollN < 3) {
             score += pinsKnockedDown;
         } else if (isStrike() || isSpare()) {
             score += pinsKnockedDown;

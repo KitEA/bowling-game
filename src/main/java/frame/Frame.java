@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Frame {
+    private final static int SECOND_ROLL = 2;
     private boolean exceededRolls = false;
     private boolean isSpare = false;
     private boolean isStrike = false;
     final List<Integer> rolls = new ArrayList<>(2);
-    int rollN = -1;
+    int rollN = 0;
     int score;
 
     public void roll(int pinsKnockedDown) {
@@ -63,21 +64,17 @@ public class Frame {
     }
 
     void checkIfStrike() {
-        if (isTheFirstRoll() && isStrikeCondition()) {
+        if (isStrikeCondition()) {
             isStrike = true;
         }
     }
 
     private boolean hasSpentAllRolls() {
-        return hasPerformedBothRolls() || rolls.get(0) == 10;
+        return hasPerformedBothRolls() || isStrikeCondition();
     }
 
     private boolean hasPerformedBothRolls() {
-        return rollN == 1;
-    }
-
-    private boolean isTheFirstRoll() {
-        return rollN == 0;
+        return rollN == SECOND_ROLL;
     }
 
     private boolean isSpareCondition() {
