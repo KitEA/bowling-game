@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Frame {
     private final static int SECOND_ROLL = 2;
+    private final static int MAX_FRAME_SCORE_EXCLUDING_BONUSES = 10;
     private boolean exceededRolls = false;
     private boolean isSpare = false;
     private boolean isStrike = false;
@@ -74,10 +75,10 @@ public class Frame {
     }
 
     private boolean isSpareCondition() {
-        return rolls.get(0) + rolls.get(1) == 10;
+        return rolls.get(0) + rolls.get(1) == MAX_FRAME_SCORE_EXCLUDING_BONUSES;
     }
 
     private boolean isStrikeCondition() {
-        return rolls.get(0) == 10;
+        return rolls.get(0) == MAX_FRAME_SCORE_EXCLUDING_BONUSES;
     }
 }

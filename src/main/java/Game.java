@@ -7,7 +7,7 @@ import java.util.List;
 public class Game {
     private static final int MAX_NUMBER_OF_FRAMES = 10;
     private static final int LAST_REGULAR_FRAME_INDEX = 8;
-    private final List<Frame> frames = new ArrayList<>(10);
+    private final List<Frame> frames = new ArrayList<>(MAX_NUMBER_OF_FRAMES);
     private int currentFrameIndex = -1;
 
     public void roll(int pinsKnockedDown) {
@@ -47,7 +47,8 @@ public class Game {
         }
         // covers the case when following frame is not a strike
         else {
-            score += frames.get(frameIndex).score() + frames.get(frameIndex + 1).score();
+            score += frames.get(frameIndex).score()
+                    + frames.get(frameIndex + 1).score();
         }
         return score;
     }
