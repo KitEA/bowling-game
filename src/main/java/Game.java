@@ -17,27 +17,21 @@ public class Game {
     }
 
     public int score() {
-        int score = 0;
-
         ListIterator<Frame> framesIterator = frames.listIterator();
+        int score = 0;
 
         while (framesIterator.hasNext()) {
             Frame currentFrame = framesIterator.next();
 
-            if (currentFrame instanceof TenthFrame) {
+            if (currentFrame.isTenthFrame()) {
                 score += currentFrame.score();
-            }
-            // strike
-            else if (currentFrame.isStrike() && framesIterator.hasNext()) {
+            } else if (isStrikeAndFrameFollows(currentFrame, framesIterator)) {
                 score = calcStrikeBonus(framesIterator, score, currentFrame);
-            }
-            else if (currentFrame.isSpare() && framesIterator.hasNext()) {
-                int currentFrameScore = currentFrame.score();
-                int nextFrameScore = framesIterator.next().getFirstRole();
+            } else if (currentFrame.isSpare() && framesIterator.hasNext()) {
+                score += currentFrame.score()
+                        + framesIterator.next().getFirstRole();
 
-                score += currentFrameScore + nextFrameScore;
-
-                framesIterator.previous();
+                reverseCursorTimes(framesIterator, 1);
             } else {
                 score += currentFrame.score();
             }
@@ -49,35 +43,38 @@ public class Game {
     private static int calcStrikeBonus(ListIterator<Frame> framesIterator, int score, Frame currentFrame) {
         Frame nextFrame = framesIterator.next();
 
-        if (nextFrame instanceof TenthFrame) {
+        if (nextFrame.isTenthFrame()) {
             score += currentFrame.score()
                     + nextFrame.getTwoRollsResult();
 
-            framesIterator.previous();
+            reverseCursorTimes(framesIterator, 1);
         }
         // covers both cases: one when both following frames are strikes
         // and one following is strike and another one is not
-        else if (nextFrame.isStrike() && framesIterator.hasNext()) {
-            Frame afterNextFrame = framesIterator.next();
-
+        else if (isStrikeAndFrameFollows(nextFrame, framesIterator)) {
             score += currentFrame.score()
                     + nextFrame.score()
-                    + afterNextFrame.getFirstRole();
+                    + framesIterator.next().getFirstRole();
 
-            resetCursorToCurrentFrame(framesIterator);
+            reverseCursorTimes(framesIterator, 2);
         }
         // covers the case when following frame is not a strike
         else {
             score += currentFrame.score();
 
-            framesIterator.previous();
+            reverseCursorTimes(framesIterator, 1);
         }
         return score;
     }
 
-    private static void resetCursorToCurrentFrame(ListIterator<Frame> framesIterator) {
-        framesIterator.previous();
-        framesIterator.previous();
+    private static boolean isStrikeAndFrameFollows(Frame currentFrame, ListIterator<Frame> framesIterator) {
+        return currentFrame.isStrike() && framesIterator.hasNext();
+    }
+
+    private static void reverseCursorTimes(ListIterator<Frame> framesIterator, int times) {
+        for (int i = 0; i < times; i++) {
+            framesIterator.previous();
+        }
     }
 
     private void checkIfShouldMoveToTheNextFrame() {

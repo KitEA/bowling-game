@@ -48,6 +48,10 @@ public class Frame {
         return score;
     }
 
+    public boolean isTenthFrame() {
+        return this instanceof TenthFrame;
+    }
+
     void checkIfRollsExceeded() {
         if (hasSpentAllRolls()) {
             exceededRolls = true;
