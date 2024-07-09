@@ -1,13 +1,13 @@
 import frame.Frame;
 import frame.TenthFrame;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Game {
     private static final int MAX_NUMBER_OF_FRAMES = 10;
     private static final int LAST_REGULAR_FRAME_INDEX = 8;
-    private final List<Frame> frames = new ArrayList<>(MAX_NUMBER_OF_FRAMES);
+    private final List<Frame> frames = new LinkedList<>();
     private int currentFrameIndex = -1;
 
     public void roll(int pinsKnockedDown) {
@@ -18,7 +18,7 @@ public class Game {
     public int score() {
         int score = 0;
 
-        for (int i = 0; i < MAX_NUMBER_OF_FRAMES; i++) {
+        for (int i = 0; i < frames.size(); i++) {
             if (isTenthFrame(i)) {
                 score += frames.get(i).score();
             } else if (frames.get(i).isStrike()) {
@@ -33,6 +33,7 @@ public class Game {
         return score;
     }
 
+    // no future strikes if asking in front of the final
     private int calculateStrikeBonus(int frameIndex, int score) {
         if (isTenthFrame(frameIndex + 1)) {
             score += frames.get(frameIndex).score()
