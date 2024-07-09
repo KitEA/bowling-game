@@ -3,6 +3,7 @@ import frame.TenthFrame;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class Game {
     private static final int MAX_NUMBER_OF_FRAMES = 10;
@@ -18,48 +19,65 @@ public class Game {
     public int score() {
         int score = 0;
 
-        for (int i = 0; i < frames.size(); i++) {
-            if (isTenthFrame(i)) {
-                score += frames.get(i).score();
-            } else if (frames.get(i).isStrike()) {
-                score = calculateStrikeBonus(i, score);
-            } else if (frames.get(i).isSpare()) {
-                score += frames.get(i).score() + frames.get(i + 1).getFirstRole();
+        ListIterator<Frame> framesIterator = frames.listIterator();
+
+        while (framesIterator.hasNext()) {
+            Frame currentFrame = framesIterator.next();
+
+            if (currentFrame instanceof TenthFrame) {
+                score += currentFrame.score();
+            }
+            // strike
+            else if (currentFrame.isStrike() && framesIterator.hasNext()) {
+                score = calcStrikeBonus(framesIterator, score, currentFrame);
+            }
+            else if (currentFrame.isSpare() && framesIterator.hasNext()) {
+                int currentFrameScore = currentFrame.score();
+                int nextFrameScore = framesIterator.next().getFirstRole();
+
+                score += currentFrameScore + nextFrameScore;
+
+                framesIterator.previous();
             } else {
-                score += frames.get(i).score();
+                score += currentFrame.score();
             }
         }
 
         return score;
     }
 
-    // no future strikes if asking in front of the final
-    private int calculateStrikeBonus(int frameIndex, int score) {
-        if (isTenthFrame(frameIndex + 1)) {
-            score += frames.get(frameIndex).score()
-                    + frames.get(frameIndex + 1).getTwoRollsResult();
+    private static int calcStrikeBonus(ListIterator<Frame> framesIterator, int score, Frame currentFrame) {
+        Frame nextFrame = framesIterator.next();
+
+        if (nextFrame instanceof TenthFrame) {
+            score += currentFrame.score()
+                    + nextFrame.getTwoRollsResult();
+
+            framesIterator.previous();
         }
         // covers both cases: one when both following frames are strikes
         // and one following is strike and another one is not
-        else if (nextFrameIsStrike(frameIndex)) {
-            score += frames.get(frameIndex).score()
-                    + frames.get(frameIndex + 1).score()
-                    + frames.get(frameIndex + 2).getFirstRole();
+        else if (nextFrame.isStrike() && framesIterator.hasNext()) {
+            Frame afterNextFrame = framesIterator.next();
+
+            score += currentFrame.score()
+                    + nextFrame.score()
+                    + afterNextFrame.getFirstRole();
+
+            resetCursorToCurrentFrame(framesIterator);
         }
         // covers the case when following frame is not a strike
         else {
-            score += frames.get(frameIndex).score()
-                    + frames.get(frameIndex + 1).score();
+            score += currentFrame.score();
+
+            framesIterator.previous();
         }
         return score;
     }
 
-    private boolean isTenthFrame(int frameIndex) {
-        return frames.get(frameIndex) instanceof TenthFrame;
-    }
-
-    private boolean nextFrameIsStrike(int frameIndex) {
-        return frames.get(frameIndex + 1).isStrike();
+    private static void resetCursorToCurrentFrame(ListIterator<Frame> framesIterator) {
+        framesIterator.previous();
+        framesIterator.previous();
     }
 
     private void checkIfShouldMoveToTheNextFrame() {
